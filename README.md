@@ -25,10 +25,10 @@ EVENT 指的是主类，addEventsHandler 静态方法具备普通事件绑定和
 EVENT.eventCommission() 指的是事件委托，在这里仅是标明此处需要实现事件委托，而不是普通的事件绑定。
 
 [] 数组参数如下：
-  索引第一个参数标识需要进行事件委托的父元素。
-  第二个参数：需要响应事件的子元素名称：如 button（当然可以是 li 等），可以指定多个子元素。
-  第三个参数指：需要响应的事件，如 click
-  第四个参数：处理函数，即事件发生时所调用的方法
+1. 索引第一个参数标识需要进行事件委托的父元素。
+2. 第二个参数：需要响应事件的子元素名称：如 button（当然可以是 li 等），可以指定多个子元素。
+3. 第三个参数指：需要响应的事件，如 click
+4. 第四个参数：处理函数，即事件发生时所调用的方法
   
 当然，addEventsHandler 有三个主参数，第三个参数 option 在这里不作说明，普通事件不建议使用此方法进行使用。
 如需使用，请参阅源码中的 eventOperating 方法，只需要将 EVENT.eventCommission() 更换成 EVENT.eventOperating() 即可。
@@ -68,3 +68,6 @@ EVENT.addHandler(document.querySelector("#button"),"click",clickBtn);
 很简单吧！这样可以保证事件处理函数的最大自由度。
 
 ## 还有很多方法没有写上，后续慢慢完善...同时工具库亦会逐步完善
+
+开源地址：https://github.com/Chongsaid/Web-Developer-Tools
+导入 tools.js 即可进行使用，其中有很多实用方法供你使用
