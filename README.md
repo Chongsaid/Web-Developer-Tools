@@ -44,6 +44,8 @@ EVENT.addHandler(document.querySelector("#button"),"click",function( event ){
 });
 ```
 
+![](https://img2018.cnblogs.com/blog/1140908/202002/1140908-20200229112025326-1601551824.png)
+
 这是推荐使用的普通事件绑定方法，它的 this 域指向了触发事件的元素本身。
 
 参数如下：
