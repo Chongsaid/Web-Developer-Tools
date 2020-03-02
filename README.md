@@ -10,17 +10,19 @@
 
 ```JavaScript
 EVENT.addEventsHandler(EVENT.eventCommission(), [document.querySelector(".header-button"), ["button"],
-  "click", function(){
+  "click", function(el,event){
     console.log('log -> click!');
   }
 ]);
 ```
 
 EVENT 指的是主类，addEventsHandler 静态方法具备普通事件绑定和事件委托处理的指定函数。
-注意：它的 this 域和处理器传入参数我忘记了，因为这个是很久前的工具库，只是今天开源。。
-你可以提交修改
+此方法没有 this 域，它的 this 指向了 undefined。
+当触发事件时，传入给处理函数的参数如下：
+1. el -> 指的是触发元素本身，此处只指定了 button，所以必定为 button 元素
+2. event -> 触发的事件对象，如 MouseEvent
 
-参数如下：
+而addEventsHandler()参数如下：
 
 EVENT.eventCommission() 指的是事件委托，在这里仅是标明此处需要实现事件委托，而不是普通的事件绑定。
 
@@ -45,6 +47,7 @@ EVENT.addHandler(document.querySelector("#button"),"click",function( event ){
 ```
 
 ![](https://img2018.cnblogs.com/blog/1140908/202002/1140908-20200229112025326-1601551824.png)
+
 
 这是推荐使用的普通事件绑定方法，它的 this 域指向了触发事件的元素本身。
 
@@ -73,3 +76,5 @@ EVENT.addHandler(document.querySelector("#button"),"click",clickBtn);
 
 开源地址：https://github.com/Chongsaid/Web-Developer-Tools
 导入 tools.js 即可进行使用，其中有很多实用方法供你使用
+
+**更新中**
