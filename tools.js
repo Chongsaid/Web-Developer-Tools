@@ -72,12 +72,114 @@ if (!Element.prototype.addEventListener) {
     }
   };
 }
+
+/* 兼容 textContent */
+if (Object.defineProperty 
+  && Object.getOwnPropertyDescriptor 
+  && Object.getOwnPropertyDescriptor(Element.prototype, "textContent") 
+  && !Object.getOwnPropertyDescriptor(Element.prototype, "textContent").get) {
+  (function() {
+    var innerText = Object.getOwnPropertyDescriptor(Element.prototype, "innerText");
+    Object.defineProperty(Element.prototype, "textContent",
+     // Passing innerText or innerText.get directly does not work,
+     // wrapper function is required.
+     {
+       get: function() {
+         return innerText.get.call(this);
+       },
+       set: function(s) {
+         return innerText.set.call(this, s);
+       }
+     }
+   );
+  })();
+}
+
+// Production steps of ECMA-262, Edition 6, 22.1.2.1
+if (!Array.from) {
+  Array.from = (function () {
+    var toStr = Object.prototype.toString;
+    var isCallable = function (fn) {
+      return typeof fn === 'function' || toStr.call(fn) === '[object Function]';
+    };
+    var toInteger = function (value) {
+      var number = Number(value);
+      if (isNaN(number)) { return 0; }
+      if (number === 0 || !isFinite(number)) { return number; }
+      return (number > 0 ? 1 : -1) * Math.floor(Math.abs(number));
+    };
+    var maxSafeInteger = Math.pow(2, 53) - 1;
+    var toLength = function (value) {
+      var len = toInteger(value);
+      return Math.min(Math.max(len, 0), maxSafeInteger);
+    };
+
+    // The length property of the from method is 1.
+    return function from(arrayLike/*, mapFn, thisArg */) {
+      // 1. Let C be the this value.
+      var C = this;
+
+      // 2. Let items be ToObject(arrayLike).
+      var items = Object(arrayLike);
+
+      // 3. ReturnIfAbrupt(items).
+      if (arrayLike == null) {
+        throw new TypeError("Array.from requires an array-like object - not null or undefined");
+      }
+
+      // 4. If mapfn is undefined, then let mapping be false.
+      var mapFn = arguments.length > 1 ? arguments[1] : void undefined;
+      var T;
+      if (typeof mapFn !== 'undefined') {
+        // 5. else
+        // 5. a If IsCallable(mapfn) is false, throw a TypeError exception.
+        if (!isCallable(mapFn)) {
+          throw new TypeError('Array.from: when provided, the second argument must be a function');
+        }
+
+        // 5. b. If thisArg was supplied, let T be thisArg; else let T be undefined.
+        if (arguments.length > 2) {
+          T = arguments[2];
+        }
+      }
+
+      // 10. Let lenValue be Get(items, "length").
+      // 11. Let len be ToLength(lenValue).
+      var len = toLength(items.length);
+
+      // 13. If IsConstructor(C) is true, then
+      // 13. a. Let A be the result of calling the [[Construct]] internal method 
+      // of C with an argument list containing the single item len.
+      // 14. a. Else, Let A be ArrayCreate(len).
+      var A = isCallable(C) ? Object(new C(len)) : new Array(len);
+
+      // 16. Let k be 0.
+      var k = 0;
+      // 17. Repeat, while k < len… (also steps a - h)
+      var kValue;
+      while (k < len) {
+        kValue = items[k];
+        if (mapFn) {
+          A[k] = typeof T === 'undefined' ? mapFn(kValue, k) : mapFn.call(T, kValue, k);
+        } else {
+          A[k] = kValue;
+        }
+        k += 1;
+      }
+      // 18. Let putStatus be Put(A, "length", len, true).
+      A.length = len;
+      // 20. Return A.
+      return A;
+    };
+  }());
+}
+
 /* END 来自MDN：兼容方法为：addEventListener、removeEventListener */
 
 /* Start 来源网络 用于兼容一些常见但自己不想进行兼容编写代码的代码片段 */
 
 // addClass、removeClass 2019-6-28 引入
-
+// 修复 addClass 传入多个类时,参数转换错误
 function addClass(elem, className) {
   if (!className) return;
 
@@ -85,7 +187,9 @@ function addClass(elem, className) {
 
   els.forEach((el) => {
     if (el.classList) {
-      el.classList.add(className.split(' '));
+      className.split(' ').forEach((cName) => {
+          el.classList.add(cName);
+      });
     } else {
       el.className += ` ${className}`;
     }
@@ -239,7 +343,11 @@ class cloudTools {
       window.scrollTo(0, currentScroll - (currentScroll / 5));
     }
   }
-  /* 此函数来源网络 */
+  /**
+   * 将 rgb 转换为 十六位进制
+   * 此函数来自网络
+   * @param {Object} rgb 数值
+   */
   rgbToHex(rgb) {
     // rgb(x, y, z)
     var color = rgb.toString().match(/\d+/g); // 把 x,y,z 推送到 color 数组里
@@ -253,9 +361,47 @@ class cloudTools {
     }
     return hex;
   }
-  
+
   insertAfter(newNode, curNode) {
     curNode.parentNode.insertBefore(newNode, curNode.nextElementSibling);
+  }
+
+  /**
+   * 得到该元素的绝对定位
+   * @param {Object} element 元素
+   */
+  getElementTop(element) {
+    var actualTop = element.offsetTop;
+    var current = element.offsetParent;
+
+    while (current !== null) {
+      actualTop += current.offsetTop;
+      current = current.offsetParent;
+    }
+
+    return actualTop;
+  }
+  
+  /**
+   * 得到该元素的相对（视窗）定位 -> 可能为 负值
+   * @param {Object} element 元素
+   */
+  getElementViewTop(element) {
+    var actualTop = element.offsetTop;
+    var current = element.offsetParent;
+
+    while (current !== null) {
+      actualTop += current.offsetTop;
+      current = current.offsetParent;
+    }
+
+    if (document.compatMode == "BackCompat") {
+      var elementScrollTop = document.body.scrollTop;
+    } else {
+      var elementScrollTop = document.documentElement.scrollTop;
+    }
+
+    return actualTop - elementScrollTop;
   }
 
   /**
@@ -325,12 +471,47 @@ class cloudTools {
           return parent;
         }
       }
+      return parent;
     }
     if (parent == document) {
       return null;
     }
     // 递归继续查询
     return this.getParentNodeByChiled(parent, parentElName, className, id);
+  }
+
+  /**
+   * 进入网页全屏
+   */
+  fullScreen() {
+    var el = document.documentElement;
+    var rfs = el.requestFullScreen || el.webkitRequestFullScreen ||
+      el.mozRequestFullScreen || el.msRequestFullScreen;
+    if (typeof rfs != "undefined" && rfs) {
+      rfs.call(el);
+    } else if (typeof window.ActiveXObject != "undefined") {
+      //for IE，这里其实就是模拟了按下键盘的F11，使浏览器全屏
+      var wscript = new ActiveXObject("WScript.Shell");
+      if (wscript != null) {
+        wscript.SendKeys("{F11}");
+      }
+    }
+  }
+
+  /**
+   * 退出网页全屏
+   */
+  exitFullScreen() {
+    var exitMethod = document.exitFullscreen || document.mozCancelFullScreen || document.webkitExitFullscreen ||
+      document.webkitExitFullscreen;
+    if (exitMethod) {
+      exitMethod.call(document);
+    } else if (typeof window.ActiveXObject !== "undefined") { //for Internet Explorer
+      var wscript = new ActiveXObject("WScript.Shell");
+      if (wscript !== null) {
+        wscript.SendKeys("{F11}");
+      }
+    }
   }
 
   IEVersion() {
@@ -506,7 +687,7 @@ class EVENT {
     }
     Handler.addEventHandler(args, options);
   }
-  
+
   /**
    * 事件委托处理函数，用于处理事件委托
    */
