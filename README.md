@@ -124,3 +124,134 @@ parent.click();
 导入 tools.js 即可进行使用，其中有很多实用方法供你使用
 
 **更新中**
+
+
+## use google translate:
+
+
+# Front-end tool library
+
+It is a lightweight front-end tool library with built-in event binding, which makes it easier to implement event delegation. Of course, most common tools are also included. This tool is designed to let you develop with ease using native JavaScript.
+
+## Event binding processing
+
+In the web front-end interface, event binding is divided into two types, one is direct event binding, and the other is event delegation processing using bubbling mechanism.
+
+### Event delegation
+
+`` `JavaScript
+EVENT.addEventsHandler (EVENT.eventCommission (), [document.querySelector (". Header-button"), ["button"],
+  "click", function (el, event) {
+  
+    console.log ('log-> click!');
+    
+  }
+]);
+`` `
+
+EVENT refers to the main class, and the addEventsHandler static method has the specified functions for ordinary event binding and event delegation processing.
+This method does not have a this field, its this points to undefined.
+When an event is triggered, the parameters passed to the handler are as follows:
+1. el-> refers to the trigger element itself, here only the button is specified, so it must be the button element
+2. event-> triggered event object, such as MouseEvent
+
+The addEventsHandler () parameter is as follows:
+
+EVENT.eventCommission () refers to event delegation, which is here only to indicate that event delegation needs to be implemented here, not ordinary event binding.
+
+[] The array parameters are as follows:
+1. The first parameter of the index identifies the parent element that needs event delegation.
+2. The second parameter: the name of the child element that needs to respond to the event: such as button (which can of course be li, etc.), you can specify multiple child elements.
+3. The third parameter refers to: the event that needs to be responded to, such as click
+4. The fourth parameter: the processing function, which is the method called when the event occurs
+  
+Of course, addEventsHandler has three main parameters, and the third parameter option is not described here. It is not recommended to use this method for ordinary events.
+If you need to use it, please refer to the eventOperating method in the source code, just replace EVENT.eventCommission () with EVENT.eventOperating ().
+It's essentially calling addHandler ()
+        
+### Common events
+
+`` `JavaScript
+
+EVENT.addHandler (document.querySelector ("# button"), "click", function (event) {
+
+  console.log ('log-> click!');
+  // this refers to the element itself that triggered the event
+  console.log (this);
+  
+});
+
+`` `
+
+! [] (https://img2018.cnblogs.com/blog/1140908/202002/1140908-20200229112025326-1601551824.png)
+
+
+This is the recommended normal event binding method, and its this field points to the element that triggered the event itself.
+
+The parameters are as follows:
+
+  First parameter: the target element to which the event needs to be bound
+  
+  Second parameter: event type, such as click
+  
+  Third parameter: the handler function to be called when the event is triggered
+  
+### The above event delegation and ordinary events can call the function name written by themselves
+
+Let's try to change the handler function to this (using ordinary events as an example):
+
+`` `JavaScript
+
+function clickBtn (event) {
+  console.log ('log-> click!');
+}
+
+EVENT.addHandler (document.querySelector ("# button"), "click", clickBtn);
+
+`` `
+
+It's simple! This guarantees the maximum degree of freedom of the event handler.
+
+## Utility Library
+
+### Get the parent element
+
+Sometimes, we need to get the parent element of a child element, although in the case of only one level, we only need the parentNode to get its parent element.
+However, in the real case, the parent element that needs to be obtained may be separated from the child element by a few or more than ten cases, can we only have parentNode * N?
+
+In this case, you only need to call the getParentNodeByChiled method in the MTools toolkit to get the parent element of the child element very easily.
+Example:
+`` `JavaScript
+
+// Get the parent element-> In practice, this parent element is a custom drop-down box
+let parent = MTools.getParentNodeByChiled (el, 'div', 'down-list');
+
+// simulate clicking on the parent element to collapse the drop-down box
+parent.click ();
+
+`` `
+! [] (https://img2020.cnblogs.com/blog/1140908/202003/1140908-20200303155439278-138988493.png)
+
+I used only three parameters in the example, and there are four parameters in the actual method to help us get the parent element we need.
+The parameter list is as follows:
+1. Child element: HTMLElement object, such as obtained through document.getElementByID
+2. Parent element tag name: String, such as "div"
+3. Class style sheet: The class style sheet to be applied to the parent element
+4. id: the ID of the parent element application to be obtained
+
+`` `HTML
+<div class = "down-list" id = "list"> </ div>
+`` `
+The class style sheet corresponds to the parent element's class, and the id corresponds to the id in the parent element
+
+* In the source code, only recursive query is used *
+
+
+
+
+## There are still many methods that have not been written, and the follow-up will be gradually improved ... meanwhile the tool library will be gradually improved
+
+Open source address: https://github.com/Chongsaid/Web-Developer-Tools
+Import tools.js and use it, there are many practical methods for you to use
+
+**updating**
