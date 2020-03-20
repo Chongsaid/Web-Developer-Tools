@@ -139,15 +139,15 @@ In the web front-end interface, event binding is divided into two types, one is 
 
 ### Event delegation
 
-`` `JavaScript
-EVENT.addEventsHandler (EVENT.eventCommission (), [document.querySelector (". Header-button"), ["button"],
-  "click", function (el, event) {
-  
-    console.log ('log-> click!');
-    
-  }
+```JavaScript
+EVENT.addEventsHandler(EVENT.eventCommission(), [document.querySelector(".header-button"), ["button"],
+  "click", function( el, event ){
+  
+    console.log('log -> click!');
+    
+  }
 ]);
-`` `
+```
 
 EVENT refers to the main class, and the addEventsHandler static method has the specified functions for ordinary event binding and event delegation processing.
 This method does not have a this field, its this points to undefined.
@@ -171,19 +171,19 @@ It's essentially calling addHandler ()
         
 ### Common events
 
-`` `JavaScript
+```JavaScript
 
-EVENT.addHandler (document.querySelector ("# button"), "click", function (event) {
+EVENT.addHandler(document.querySelector("#button"),"click",function( event ){
 
-  console.log ('log-> click!');
-  // this refers to the element itself that triggered the event
-  console.log (this);
-  
+  console.log('log -> click!');
+  // this 指的是被触发事件的元素本身
+  console.log( this );
+  
 });
 
-`` `
+```
 
-! [] (https://img2018.cnblogs.com/blog/1140908/202002/1140908-20200229112025326-1601551824.png)
+![](https://img2018.cnblogs.com/blog/1140908/202002/1140908-20200229112025326-1601551824.png)
 
 
 This is the recommended normal event binding method, and its this field points to the element that triggered the event itself.
@@ -200,15 +200,16 @@ The parameters are as follows:
 
 Let's try to change the handler function to this (using ordinary events as an example):
 
-`` `JavaScript
 
-function clickBtn (event) {
-  console.log ('log-> click!');
+```JavaScript
+
+function clickBtn( event ){
+  console.log('log -> click!');
 }
 
-EVENT.addHandler (document.querySelector ("# button"), "click", clickBtn);
+EVENT.addHandler(document.querySelector("#button"),"click",clickBtn);
 
-`` `
+```
 
 It's simple! This guarantees the maximum degree of freedom of the event handler.
 
@@ -221,16 +222,18 @@ However, in the real case, the parent element that needs to be obtained may be s
 
 In this case, you only need to call the getParentNodeByChiled method in the MTools toolkit to get the parent element of the child element very easily.
 Example:
-`` `JavaScript
 
-// Get the parent element-> In practice, this parent element is a custom drop-down box
-let parent = MTools.getParentNodeByChiled (el, 'div', 'down-list');
+```JavaScript
 
-// simulate clicking on the parent element to collapse the drop-down box
-parent.click ();
+// 获取父元素 -> 实际应用中，此父元素是一个自定义的下拉框
+let parent = MTools.getParentNodeByChiled(el,'div','down-list');
 
-`` `
-! [] (https://img2020.cnblogs.com/blog/1140908/202003/1140908-20200303155439278-138988493.png)
+// 模拟点击父元素以收起下拉框
+parent.click();
+
+```
+![](https://img2020.cnblogs.com/blog/1140908/202003/1140908-20200303155439278-138988493.png)
+
 
 I used only three parameters in the example, and there are four parameters in the actual method to help us get the parent element we need.
 The parameter list is as follows:
@@ -239,9 +242,9 @@ The parameter list is as follows:
 3. Class style sheet: The class style sheet to be applied to the parent element
 4. id: the ID of the parent element application to be obtained
 
-`` `HTML
-<div class = "down-list" id = "list"> </ div>
-`` `
+```HTML
+<div class="down-list" id="list"></div>
+```
 The class style sheet corresponds to the parent element's class, and the id corresponds to the id in the parent element
 
 * In the source code, only recursive query is used *
