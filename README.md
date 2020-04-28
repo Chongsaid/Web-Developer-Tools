@@ -131,7 +131,7 @@ parent.click();
 
 # Front-end tool library
 
-It is a lightweight front-end tool library with built-in event binding, which makes it easier to implement event delegation. Of course, most common tools are also included. This tool is designed to let you develop with ease using native JavaScript.
+It is a light-weight front-end tool library with built-in event binding, which makes event delegation easier. Of course, most common tools are also included. This tool is designed to allow you to use native JavaScript to still develop with ease.
 
 ## Event binding processing
 
