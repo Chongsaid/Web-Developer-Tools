@@ -233,6 +233,17 @@ Array.prototype.remove = function(from, to) {
 
 /* End 来源网络 用于兼容一些常见但自己不想进行兼容编写代码的代码片段 */
 
+
+/**
+ * Web-Developer-Tools By Chongsaid (MPL-2.0 Licensed)
+ * Github: https://github.com/Chongsaid/Web-Developer-Tools
+ *
+ * If using, please keep the agreement license and author name
+ * 如果使用，请保留协议许可以及作者名称
+ *
+ */
+
+
 /* 兼容 去除前后空格 */
 String.prototype.trim = function() {
   return this.replace(/^\s+|\s+$/gm, '');
