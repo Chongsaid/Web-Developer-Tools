@@ -224,6 +224,13 @@ Date.prototype.formatYYYYMMDD = function() {
   return [year, month, day].join('-');
 }
 
+// Array Remove - By John Resig (MIT Licensed)
+Array.prototype.remove = function(from, to) {
+  var rest = this.slice((to || from) + 1 || this.length);
+  this.length = from < 0 ? this.length + from : from;
+  return this.push.apply(this, rest);
+};
+
 /* End 来源网络 用于兼容一些常见但自己不想进行兼容编写代码的代码片段 */
 
 /* 兼容 去除前后空格 */
@@ -242,7 +249,6 @@ String.prototype.checkAccountID = function() {
   } catch (e) {
     throw "在尝试验证字符是否由 字母、数字以及下划线组成时发生了错误。";
   }
-  return false;
 }
 /* 验明字符串是否为正数 */
 String.prototype.isNumber = function() {
@@ -254,6 +260,26 @@ String.prototype.checkYYYYMMDD = function() {
   var reg =
     /^((^((1[8-9]\d{2})|([2-9]\d{3}))([-\/\._])(10|12|0?[13578])([-\/\._])(3[01]|[12][0-9]|0?[1-9])$)|(^((1[8-9]\d{2})|([2-9]\d{3}))([-\/\._])(11|0?[469])([-\/\._])(30|[12][0-9]|0?[1-9])$)|(^((1[8-9]\d{2})|([2-9]\d{3}))([-\/\._])(0?2)([-\/\._])(2[0-8]|1[0-9]|0?[1-9])$)|(^([2468][048]00)([-\/\._])(0?2)([-\/\._])(29)$)|(^([3579][26]00)([-\/\._])(0?2)([-\/\._])(29)$)|(^([1][89][0][48])([-\/\._])(0?2)([-\/\._])(29)$)|(^([2-9][0-9][0][48])([-\/\._])(0?2)([-\/\._])(29)$)|(^([1][89][2468][048])([-\/\._])(0?2)([-\/\._])(29)$)|(^([2-9][0-9][2468][048])([-\/\._])(0?2)([-\/\._])(29)$)|(^([1][89][13579][26])([-\/\._])(0?2)([-\/\._])(29)$)|(^([2-9][0-9][13579][26])([-\/\._])(0?2)([-\/\._])(29)$))$/
   return reg.test(this);
+}
+
+/**
+ * 向数组插入唯一的值：
+ * 
+ * 如果觉得有必要，否则请不要使用此方法
+ * 因为它需要遍历整个数组以检测是否重复，这会造成性能问题
+ */
+Array.prototype.unique_push = function(){
+  if ( arguments.length !== 1 ) {
+    // 虽然事实上可以嵌套循环,但我不想写:)
+    throw new Error("此方法目前仅兼容插入一个不重复的值,而非批量插入不同的值");
+    return;
+  }
+  for ( let i = 0; i < this.length; i++ ) {
+    if ( this[i].el === arguments[0].el ) {
+      this.remove(i);
+    }
+  }
+  this.push(arguments[0]);
 }
 
 
@@ -513,6 +539,13 @@ class cloudTools {
       }
     }
   }
+  
+  getRealPath() {
+    var localObj = window.location;
+    var contextPath = localObj.pathname.split("/")[1];
+    var basePath = localObj.protocol + "//" + localObj.host + "/" + contextPath;
+    return basePath;
+  }
 
   IEVersion() {
     var userAgent = navigator.userAgent; //取得浏览器的userAgent字符串  
@@ -559,6 +592,8 @@ class Animation {
    * animationName CSS 动画关键帧(动画)
    * time 规定动画应该进行多长时间
    * repeat 规定动画是否重复
+   * linear 是否为匀速
+   * 
    * @param {Object} config 配置参数
    */
   static add(config) {
@@ -586,13 +621,14 @@ class Animation {
     if (true === config.linear) {
       linear = "linear";
     }
+    let oldStyle = config.htmlDOM.getAttribute("style");
     if (true === config.repeat) {
-      config.htmlDOM.setAttribute("style", "animation: " + config.animationName.trim().toString() +
+      config.htmlDOM.setAttribute("style", oldStyle + "animation: " + config.animationName.trim().toString() +
         " " + config.time + "s " + linear + " infinite;");
       return;
     }
 
-    config.htmlDOM.setAttribute("style", "animation: " + config.animationName.trim().toString() +
+    config.htmlDOM.setAttribute("style", oldStyle + "animation: " + config.animationName.trim().toString() +
       " " + config.time + "s " + linear + ";");
   }
 
@@ -623,6 +659,11 @@ class EVENT {
           passiveSupported = true;
         }
       });
+
+      if ( null == element ) {
+        console.error("绑定事件的元素值为 null，无法处理");
+        return;
+      }
 
       element.addEventListener(type, handler, passiveSupported ? options : false);
 
@@ -757,4 +798,53 @@ class EVENT {
     }
   }
 
+}
+
+/**
+ * Cookie 类，用于读取，写入以及删除
+ */
+class Cookies {
+  /**
+   * 将Cookie写入浏览器
+   * @param {String} name Cookie 名称 
+   * @param {String} value Cookie 值
+   * @param {Object} setting Cookie 配置，如 expires 配置的是有效时间 s
+   */
+  static set(name, value, setting) {
+    if (name === undefined || value === undefined) return false;
+    if (!setting) var setting = {};
+    var Mcookie = name + "=" + escape(value);
+    var Expires = 1; //默认一天过期
+    var exdate = new Date();
+    if (setting.expires) {
+      exdate.setTime(exdate.getTime() + setting.expires * 24 * 60 * 60 * 1000);
+    } else {
+      exdate.setTime(exdate.getTime() + Expires * 24 * 60 * 60 * 1000);
+    }
+    Mcookie += ";expires=" + exdate.toGMTString();
+    Mcookie += setting.path ? (";path=" + setting.path) : "";
+    Mcookie += setting.domain ? (";domain=" + setting.domain) : "";
+    Mcookie += setting.secure ? (";secure=" + setting.secure) : "";
+    document.cookie = Mcookie;
+  }
+  /**
+   * 读取一个 Cookie 的值
+   * @param {String} name Cookie名称 
+   */
+  static get(name) {
+    var arr, reg = new RegExp("(^| )" + name + "=([^;]*)(;|$)");
+    if (arr = document.cookie.match(reg))
+      return unescape(arr[2]);
+    else
+      return null;
+  }
+  /**
+   * 将一个 Cookie 移除
+   * @param {String}} name Cookie 名称
+   */
+  static remove(name) {
+    this.set(name, "", {
+      expires: -1
+    });
+  }
 }
