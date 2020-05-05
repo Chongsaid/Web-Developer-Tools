@@ -6,6 +6,12 @@
 
 在 Web 前端界面中，事件绑定分为两种，一种是直接的事件绑定，另外一种则是使用冒泡机制的事件委托处理
 
+当子元素过多时，而且它们执行的都是相同的函数，那么相比较单独的事件绑定，事件委托可以带来更高的执行效率：
+在绑定时，浏览器不必遍历一个个子元素去绑定事件，只需要指定一个父元素绑定好事件委托即可，
+当其任意子元素发生点击时，则冒泡机制会触发到父元素的事件，由父元素的事件进行处理，
+所以我们可以根据事件中的 **target** 知道发生事件的子元素，也就有了处理的前提。
+这也是事件委托代码的基本原理。
+
 ### 事件委托
 
 ```JavaScript
@@ -136,6 +142,12 @@ It is a light-weight front-end tool library with built-in event binding, which m
 ## Event binding processing
 
 In the web front-end interface, event binding is divided into two types, one is direct event binding, and the other is event delegation processing using bubbling mechanism.
+
+When there are too many child elements, and they all execute the same function, then event delegation can bring higher execution efficiency than separate event binding:
+When binding, the browser does not need to traverse each child element to bind the event, only need to specify a parent element to bind the event delegate,
+When any of its child elements is clicked, the bubble mechanism will trigger the event of the parent element, which is processed by the event of the parent element.
+Therefore, we can know the child elements of the event according to the **target** in the event, and we have the premise of processing.
+This is also the basic principle of event delegation code.
 
 ### Event delegation
 
