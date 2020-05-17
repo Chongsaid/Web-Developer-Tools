@@ -71,6 +71,30 @@ EVENT.addHandler(document.querySelector("#button"),"click",function( event ){
   
   第三个参数：当事件触发时所调用的处理器函数
   
+  
+注：此处不推荐使用 **箭头函数** 进行编写，因为其 this 域将会变动为 引用对象 本身，因此如果期望 this 域 是触发事件的元素本身，请勿使用箭头函数。
+
+如：
+
+```JavaScript
+
+class Test {
+
+  constructor() {}
+  
+  _init(){
+    EVENT.addHandler(document.querySelector("#button"),"click",( _event ) => {
+      console.log('log -> click!');
+      // this 将是 Test 的引用
+      console.log( this );
+    });
+  }
+  
+}
+
+```
+
+  
 ### 以上的事件委托以及普通事件均能调用自己所写的函数名称
 
 不妨试试将处理器函数改为这样（以普通事件为例）：
